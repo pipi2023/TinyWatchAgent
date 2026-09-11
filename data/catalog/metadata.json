@@ -1,0 +1,6 @@
+{
+  "path": "data/catalog/catalog.json",
+  "movies": 5000,
+  "source": "imdb-non-commercial-tsv",
+  "zh_aka": 5000
+}

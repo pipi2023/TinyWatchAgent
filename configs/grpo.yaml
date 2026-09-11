@@ -1,0 +1,10 @@
+# Lightweight in-process GRPO. G=4, Reward v1, ~100 steps.
+
+group_size: 4
+max_steps: 100
+learning_rate: 0.00001
+max_environment_steps: 14
+kl_coefficient: 0.0
+dynamic_sampling: true
+lora_r: 16
+lora_alpha: 32

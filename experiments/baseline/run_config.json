@@ -1,0 +1,5 @@
+{
+  "model": "/root/autodl-tmp/models/Qwen3.5-2B",
+  "benchmark": "data/evaluation/tasks.jsonl",
+  "panels": "deterministic-four"
+}

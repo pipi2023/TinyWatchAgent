@@ -1,0 +1,29 @@
+{
+  "panels": {
+    "behavior": {
+      "guard_rejections": 43,
+      "mean_executed_tool_steps": 5.6
+    },
+    "infra": {
+      "invalid_count": 39,
+      "invalid_rate": 0.39
+    },
+    "reward": {
+      "reward_type_counts": {
+        "None": 39,
+        "gold_watchlist": 2,
+        "loop": 10,
+        "partial": 1,
+        "valid_alternative": 48
+      },
+      "strict_gold_success_count": 2,
+      "strict_gold_success_rate": 0.02
+    },
+    "rubric": {
+      "all_hard_passed_count": 50,
+      "all_hard_passed_rate": 0.5
+    }
+  },
+  "schema_version": "tinywatch-eval-summary-v1",
+  "trajectory_count": 100
+}

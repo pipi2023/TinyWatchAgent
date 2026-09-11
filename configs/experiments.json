@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "student": "Qwen/Qwen3.5-2B",
+  "teacher": "deepseek-v4-flash",
+  "environment": "tinywatch-environment-v1",
+  "reward": "tinywatch-reward-v1",
+  "eval_holdout": 100,
+  "sft_target_accepted": 400,
+  "grpo_steps": 100
+}

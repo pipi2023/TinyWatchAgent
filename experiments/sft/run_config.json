@@ -1,0 +1,6 @@
+{
+  "model": "outputs/models/sft-merged",
+  "train": "data/sft/train.jsonl",
+  "validation": "data/sft/validation.jsonl",
+  "train_loss": 0.1317
+}
