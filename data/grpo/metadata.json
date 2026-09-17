@@ -2,7 +2,7 @@
   "grpo_train": {
     "path": "data/grpo/train.jsonl",
     "rows": 400,
-    "sha256": "aeb1ff4dce94ed0d63d474927ee708e15ac0ecb5affdcd9d8382ed5be97f2910"
+    "sha256": "0097d3e8c3d1be9e324ea7328bd9bff5f307a351ce5b40ec617df9763a91e77f"
   },
   "seed": 42
 }

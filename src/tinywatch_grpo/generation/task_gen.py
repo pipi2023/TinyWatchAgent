@@ -97,7 +97,9 @@ def _query(difficulty: str, constraints: dict, nxt) -> str:
     template = _pick(nxt, QUERY_TEMPLATES[difficulty])
     year_min = constraints.get("year_min")
     year_max = constraints.get("year_max")
-    if year_min and year_max:
+    if year_min and year_max and int(year_min) == int(year_max):
+        year_span = f"{year_min}年"
+    elif year_min and year_max:
         year_span = f"{year_min}–{year_max}年"
     elif year_min:
         year_span = f"{year_min}年以后"
@@ -127,21 +129,23 @@ def generate_task(task_id: int, catalog: dict, *, difficulty: str, nxt, solvable
     if difficulty == "easy":
         n_movies = 1
         n_genres = 1
-        with_director = False
-        year_window = None
+        with_director = True
+        year_window = 0
     elif difficulty == "medium":
         n_movies = 1 + nxt(2)
         n_genres = 1 + nxt(2)
-        with_director = nxt(3) == 0
+        with_director = nxt(3) != 0
         year_window = 20
     else:
         n_movies = 2
         n_genres = 2
-        with_director = nxt(2) == 0
+        with_director = True
         year_window = 12
     gold_movies = None
     for _attempt in range(24):
         seed_movie = _pick(nxt, movies)
+        if with_director and not seed_movie.get("directors"):
+            continue
         genres = []
         available = list(seed_movie.get("genres") or [])
         for _ in range(min(n_genres, len(available) or 1)):
@@ -157,16 +161,19 @@ def generate_task(task_id: int, catalog: dict, *, difficulty: str, nxt, solvable
         if candidate is None:
             continue
         years = [int(movie["year"]) for movie in candidate]
-        if year_window:
+        if year_window == 0:
+            year_min = min(years)
+            year_max = max(years)
+        elif year_window:
             year_min = max(1960, min(years) - nxt(3))
             year_max = min(2024, max(years) + nxt(3))
         else:
             year_min = None
             year_max = None
-        min_rating = round(min(float(movie["rating"]) for movie in candidate) - (0.2 if difficulty == "easy" else 0.1), 1)
+        min_rating = round(min(float(movie["rating"]) for movie in candidate) - 0.1, 1)
         min_rating = max(6.5, min_rating)
         total_runtime = sum(int(movie["runtime"]) for movie in candidate)
-        pad = 40 if difficulty == "easy" else 18 if difficulty == "medium" else 8
+        pad = 12 if difficulty == "easy" else 14 if difficulty == "medium" else 8
         max_total_runtime = total_runtime + pad
         require_zh = difficulty != "easy" and nxt(4) == 0
         if require_zh and not all(movie.get("has_zh_aka") for movie in candidate):

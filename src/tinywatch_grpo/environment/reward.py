@@ -88,11 +88,23 @@ def evidence_valid(task: dict, draft: dict, inspected_ids: set[str], crew_ids: s
     return True
 
 
+def gold_overlap(task: dict, draft: dict) -> float:
+    """Jaccard overlap between the draft and the gold id set."""
+    gold_ids = set((task.get("gold_watchlist") or {}).get("movie_ids") or [])
+    draft_ids = set(draft.get("movie_ids") or [])
+    if not gold_ids:
+        return 0.0
+    union = gold_ids | draft_ids
+    if not union:
+        return 0.0
+    return len(gold_ids & draft_ids) / len(union)
+
+
 def gold_match(task: dict, draft: dict) -> bool:
-    gold = task.get("gold_watchlist") or {}
-    gold_ids = list(gold.get("movie_ids") or [])
+    """Watchlists are unordered sets; order of add_to_watchlist does not matter."""
+    gold_ids = list((task.get("gold_watchlist") or {}).get("movie_ids") or [])
     draft_ids = list(draft.get("movie_ids") or [])
-    return bool(gold_ids) and gold_ids == draft_ids
+    return bool(gold_ids) and set(gold_ids) == set(draft_ids) and len(gold_ids) == len(draft_ids)
 
 
 def _partial_score(gates: dict) -> float:

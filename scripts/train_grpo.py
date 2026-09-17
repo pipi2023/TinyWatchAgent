@@ -21,13 +21,54 @@ def parse_args():
     parser.add_argument("--group-size", type=int, default=4)
     parser.add_argument("--max-steps", type=int, default=100)
     parser.add_argument("--max-environment-steps", type=int, default=14)
-    parser.add_argument("--learning-rate", type=float, default=1e-5)
+    parser.add_argument("--learning-rate", type=float, default=1e-6)
     parser.add_argument("--lora-r", type=int, default=16)
     parser.add_argument("--lora-alpha", type=int, default=32)
-    parser.add_argument("--temperature", type=float, default=0.8)
+    parser.add_argument("--temperature", type=float, default=0.7)
     parser.add_argument("--max-new-tokens", type=int, default=256)
     parser.add_argument("--max-length", type=int, default=4096)
     parser.add_argument("--dtype", choices=("bf16", "fp16", "fp32"), default="bf16")
+    parser.add_argument("--shaped-reward", action=argparse.BooleanOptionalAction, default=True)
+    parser.add_argument("--resample-attempts", type=int, default=2)
+    parser.add_argument("--clip-ratio", type=float, default=0.2)
+    parser.add_argument("--save-every", type=int, default=25)
+    parser.add_argument(
+        "--logprob-reduction",
+        choices=("sum", "mean"),
+        default="sum",
+        help="sum=v3 sequence logprob; mean=v4 length-normalized",
+    )
+    parser.add_argument(
+        "--neg-advantage-coef",
+        type=float,
+        default=1.0,
+        help="Multiply negative advantages (v4 uses 0.5)",
+    )
+    parser.add_argument(
+        "--task-schedule",
+        choices=("director_first", "shuffled_n2"),
+        default="director_first",
+    )
+    parser.add_argument("--n2-oversample", type=float, default=1.0)
+    parser.add_argument("--schedule-seed", type=int, default=42)
+    parser.add_argument(
+        "--kl-coefficient",
+        type=float,
+        default=0.0,
+        help="KL(policy || SFT) via PEFT disable_adapter; v5 uses 0.02",
+    )
+    parser.add_argument(
+        "--n2-temperature",
+        type=float,
+        default=None,
+        help="Sampling temperature for n≥2 policy rollouts (default: --temperature)",
+    )
+    parser.add_argument(
+        "--oracle-mix",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Replace one n≥2 group slot with an Oracle gold trajectory",
+    )
     parser.add_argument("--merge", action="store_true", help="merge LoRA adapter after training")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument(
@@ -58,6 +99,13 @@ def main():
         "max_environment_steps": args.max_environment_steps,
         "dynamic_sampling": True,
         "mode": "in_process_peft",
+        "logprob_reduction": args.logprob_reduction,
+        "neg_advantage_coef": args.neg_advantage_coef,
+        "task_schedule": args.task_schedule,
+        "n2_oversample": args.n2_oversample,
+        "kl_coefficient": args.kl_coefficient,
+        "n2_temperature": args.n2_temperature,
+        "oracle_mix": args.oracle_mix,
     }
     if args.dry_run:
         dummy = [0.0, 1.0, 0.6, 0.6]
@@ -85,9 +133,28 @@ def main():
         max_new_tokens=args.max_new_tokens,
         max_length=args.max_length,
         dtype_name=args.dtype,
+        shaped_reward=args.shaped_reward,
+        resample_attempts=args.resample_attempts,
+        clip_ratio=args.clip_ratio,
+        save_every=args.save_every,
+        logprob_reduction=args.logprob_reduction,
+        neg_advantage_coef=args.neg_advantage_coef,
+        task_schedule=args.task_schedule,
+        n2_oversample=args.n2_oversample,
+        schedule_seed=args.schedule_seed,
+        kl_coefficient=args.kl_coefficient,
+        n2_temperature=args.n2_temperature,
+        oracle_mix=args.oracle_mix,
     )
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     if args.merge:
+        import gc
+
+        import torch
+
+        gc.collect()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
         manifest = merge_grpo_adapter(
             base_model=args.model,
             adapter=Path(summary["adapter"]),

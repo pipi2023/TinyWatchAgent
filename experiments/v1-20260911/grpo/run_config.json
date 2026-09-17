@@ -1,0 +1,18 @@
+{
+  "steps": 100,
+  "optimizer_steps": 43,
+  "skipped_constant_groups": 57,
+  "mean_reward": 0.18889199999999998,
+  "seconds": 22815.1,
+  "adapter": "outputs/models/grpo/adapter",
+  "config": {
+    "model": "outputs/models/sft-merged",
+    "group_size": 4,
+    "max_steps": 100,
+    "learning_rate": 1e-05,
+    "max_environment_steps": 12,
+    "lora_r": 16,
+    "lora_alpha": 32,
+    "dynamic_sampling": true
+  }
+}

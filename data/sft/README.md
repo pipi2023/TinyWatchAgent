@@ -1,3 +1,3 @@
-# SFT data (Flash-accepted)
+# SFT data (v2 Oracle, identifiable gold)
 
-Copied from `outputs/flash-collection/train.jsonl` and `validation.jsonl` after collection audit. These rows are action-only sanitized messages (thinking stripped). Do not train on `raw.jsonl` or full teacher replies.
+Staged from `outputs/oracle-v2-collection/` after Reward v1 filtering. V1 Flash SFT lives in `data/archive/v1-20260911/sft/`.

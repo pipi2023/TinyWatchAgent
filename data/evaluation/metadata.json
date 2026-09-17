@@ -2,7 +2,7 @@
   "evaluation": {
     "path": "data/evaluation/tasks.jsonl",
     "rows": 100,
-    "sha256": "d867ecdb50d8037cf0757230cf12f72b67913b1d898268024980264c2a385d86"
+    "sha256": "a99af4d22d19c16a5288c20f133ee4a21b35edf9b135afecf1747d13c0ff9a96"
   },
   "seed": 42
 }

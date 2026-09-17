@@ -26,7 +26,14 @@ SYSTEM_PROMPT = """你是 TinyWatch 片单 Agent，必须通过工具完成一�
 4. 片单部数、总片长、类型、年份、评分满足后再 finalize_watchlist。
 5. 充分检索后仍无法满足硬约束时 abort，reason 只能是 no_feasible_watchlist。
 6. 不要重复同一动作；被守卫拒绝后根据当前页面改合法动作。
+7. search_movies 的 genre 必须用中文类型名（剧情、战争、科幻、喜剧等）；query 优先用导演名、中文类型或年份，不要只用英文类型词。
 """
+
+TOOL_REMINDER = (
+    "请立即调用一个合法工具。不要只输出文本。"
+    "若片单已满足约束，调用 finalize_watchlist；"
+    "若确认无解，调用 abort，reason=no_feasible_watchlist。"
+)
 
 MAX_BLOCKED = 3
 
@@ -143,6 +150,7 @@ def rollout_task(
     truncations = []
     usage_total = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
     error = None
+    no_tool_retries = 0
     try:
         while not result["done"]:
             message = client.complete(messages, TINYWATCH_TOOL_SCHEMAS)
@@ -168,6 +176,10 @@ def rollout_task(
                 assistant["reasoning_content"] = message["reasoning_content"]
             messages.append(assistant)
             parsed, parse_error = parse_tool_call(message)
+            if parse_error == "no_tool_call" and no_tool_retries < 1:
+                no_tool_retries += 1
+                messages.append({"role": "user", "content": TOOL_REMINDER})
+                continue
             if parse_error:
                 error = parse_error
                 break

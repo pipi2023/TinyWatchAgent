@@ -12,6 +12,7 @@
 |---|---:|---|
 | `gold_watchlist` | 1.00 | true |
 | `valid_alternative` | 0.60 | true |
+| `valid_alternative` | 0.60 | true |
 | `partial` | 0–0.25 | true |
 | `correct_abort` | 0.50 | true |
 | `early_abort` | -0.35 | true |
@@ -20,4 +21,4 @@
 | `wrong_watchlist` / `incomplete_watchlist` | -0.85 | true |
 | 关键影片未 open/compare（或导演约束未 view_crew） | 0.00 | **false** |
 
-`reward_valid=false` 的轨迹不进 SFT 正样本。严格评测成功还要求 `finalize_watchlist` 且 `reward_type=gold_watchlist`。
+`reward_valid=false` 的轨迹不进 SFT 正样本。严格评测成功还要求 `finalize_watchlist` 且 `reward_type=gold_watchlist`。片单与金标比较按 **ID 集合**（顺序无关）。

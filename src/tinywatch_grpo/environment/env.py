@@ -10,6 +10,7 @@ from tinywatch_grpo.environment.observation import render_movie_line, render_obs
 from tinywatch_grpo.environment.reward import score_terminal
 from tinywatch_grpo.environment.search import BM25Index, movie_document
 from tinywatch_grpo.environment.tools import ENVIRONMENT_VERSION, MAX_STEPS_DEFAULT, REWARD_VERSION, SEARCH_TOP_K
+from tinywatch_grpo.generation.vocab import normalize_genre
 
 
 class TinyWatchEnv:
@@ -108,7 +109,15 @@ class TinyWatchEnv:
         return result
 
     def _search(self, parameters: dict) -> dict:
+        parameters = dict(parameters or {})
+        if parameters.get("genre"):
+            mapped = normalize_genre(parameters.get("genre"))
+            if mapped:
+                parameters["genre"] = mapped
         query = str(parameters.get("query") or "")
+        mapped_query_genre = normalize_genre(query)
+        if mapped_query_genre and mapped_query_genre != query:
+            query = f"{query} {mapped_query_genre}".strip()
         hits = []
         exact = self._title_index.get(query.casefold()) or []
         for movie_id in exact:
@@ -291,7 +300,7 @@ class TinyWatchEnv:
 
 
 def _movie_matches_filters(movie: dict, parameters: dict) -> bool:
-    genre = parameters.get("genre")
+    genre = normalize_genre(parameters.get("genre"))
     if genre and genre not in (movie.get("genres") or []):
         return False
     year = int(movie.get("year") or 0)

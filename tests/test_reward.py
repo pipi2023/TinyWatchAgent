@@ -53,3 +53,9 @@ def test_gold_watchlist_score():
     assert detail["reward_type"] == "gold_watchlist"
     assert detail["reward"] == 1.0
     assert detail["watchlist_success"] is True
+
+
+def test_gold_match_is_unordered():
+    task = {"gold_watchlist": {"movie_ids": ["tt1", "tt2"]}}
+    assert gold_match(task, {"movie_ids": ["tt2", "tt1"]})
+    assert not gold_match(task, {"movie_ids": ["tt1"]})

@@ -2,18 +2,20 @@
   "sft_pool": {
     "path": "data/tasks/sft_pool.jsonl",
     "rows": 1000,
-    "sha256": "6f4beed1f91c229951d35f620eafa4b3fc43fa8a2d03c2e23258daa68c51647d"
+    "sha256": "baae99404a6d2722cc8dfa9c02a679235a03b4c39a4c5e929d927bbf985e3177"
   },
   "grpo_train": {
     "path": "data/grpo/train.jsonl",
     "rows": 400,
-    "sha256": "aeb1ff4dce94ed0d63d474927ee708e15ac0ecb5affdcd9d8382ed5be97f2910"
+    "sha256": "0097d3e8c3d1be9e324ea7328bd9bff5f307a351ce5b40ec617df9763a91e77f"
   },
   "evaluation": {
     "path": "data/evaluation/tasks.jsonl",
     "rows": 100,
-    "sha256": "d867ecdb50d8037cf0757230cf12f72b67913b1d898268024980264c2a385d86"
+    "sha256": "a99af4d22d19c16a5288c20f133ee4a21b35edf9b135afecf1747d13c0ff9a96"
   },
   "seed": 42,
-  "disjoint": true
+  "disjoint": true,
+  "gold_recipe": "identifiable-v2",
+  "notes": "Easy/hard tasks expose director + year so gold is recoverable from the public query."
 }

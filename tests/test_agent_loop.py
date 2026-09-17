@@ -108,3 +108,32 @@ def test_rollout_serializes_multiple_tool_calls_before_execution():
     assert [
         call["id"] for call in trajectory["tool_call_truncations"][0]["dropped_tool_calls"]
     ] == ["call_1", "call_2"]
+
+
+def test_no_tool_call_retries_once_then_continues():
+    catalog, task = _easy_task()
+    gold_id = task["gold_watchlist"]["movie_ids"][0]
+    title = catalog["movies"][0]["title_zh"]
+    for movie in catalog["movies"]:
+        if movie["movie_id"] == gold_id:
+            title = movie.get("title_zh") or movie["title_en"]
+            break
+    client = ScriptedClient(
+        [
+            {"role": "assistant", "content": "我先想一下", "tool_calls": []},
+            {
+                "role": "assistant",
+                "content": "",
+                "tool_calls": [_tool_call("search_movies", {"query": title}, "call_retry")],
+            },
+            {
+                "role": "assistant",
+                "content": "",
+                "tool_calls": [_tool_call("open", {"movie_id": gold_id}, "call_open")],
+            },
+        ]
+    )
+    trajectory = rollout_task(task, catalog, client, max_steps=2)
+    assert trajectory["error"] != "no_tool_call"
+    assert trajectory["steps"][0]["tool_name"] == "search_movies"
+    assert any(message.get("role") == "user" and "合法工具" in (message.get("content") or "") for message in trajectory["messages"])

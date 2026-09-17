@@ -31,10 +31,44 @@ GENRE_EN_TO_ZH = {
     "Western": "西部",
 }
 
+
+def _genre_aliases() -> dict[str, str]:
+    aliases = {}
+    for english, chinese in GENRE_EN_TO_ZH.items():
+        aliases[chinese] = chinese
+        aliases[english] = chinese
+        aliases[english.lower()] = chinese
+        aliases[english.replace("-", "")] = chinese
+        aliases[english.replace("-", "").lower()] = chinese
+        aliases[english.replace("-", " ").lower()] = chinese
+    aliases.update(
+        {
+            "scifi": "科幻",
+            "sci fi": "科幻",
+            "sci-fi": "科幻",
+            "filmnoir": "黑色电影",
+            "film noir": "黑色电影",
+        }
+    )
+    return aliases
+
+
+GENRE_ALIASES = _genre_aliases()
+
+
+def normalize_genre(genre: str | None) -> str | None:
+    """Map English / mixed genre labels onto the Chinese catalog names."""
+    if genre is None:
+        return None
+    text = str(genre).strip()
+    if not text:
+        return None
+    return GENRE_ALIASES.get(text) or GENRE_ALIASES.get(text.casefold()) or text
+
 QUERY_TEMPLATES = {
     "easy": (
-        "帮我选{n}部{genres}片，总片长不超过{runtime}分钟，评分至少{rating}，{extra}。",
-        "想看{genres}，{n}部就行，总时长≤{runtime}分钟，IMDb≥{rating}。{extra}",
+        "帮我选{n}部{year_span}的{genres}片，总片长不超过{runtime}分钟，评分至少{rating}，{extra}。",
+        "想看{genres}，{n}部，{year_span}，总时长≤{runtime}分钟，IMDb≥{rating}。{extra}",
     ),
     "medium": (
         "准备一个{n}部片单：类型覆盖{genres}，年份{year_span}，总片长不超过{runtime}分钟，评分≥{rating}。{extra}",

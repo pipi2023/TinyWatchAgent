@@ -1,10 +1,25 @@
-# Lightweight in-process GRPO. G=4, Reward v1, ~100 steps.
+# Lightweight in-process GRPO. G=4, Reward v1 + gold-shaped advantages + PPO clip.
+# v3 defaults: director_first, sum logprob, neg_coef=1.
+# v5 recipe: shuffled_n2 (no oversample), oracle mix, mean logprob, KL 0.02
+# (see run_v5_grpo_experiment.sh).
 
 group_size: 4
 max_steps: 100
-learning_rate: 0.00001
+learning_rate: 0.000001
 max_environment_steps: 14
-kl_coefficient: 0.0
+kl_coefficient: 0.02
 dynamic_sampling: true
+shaped_reward: true
+resample_attempts: 2
+temperature: 0.7
+n2_temperature: 1.0
+clip_ratio: 0.2
+save_every: 25
+logprob_reduction: mean
+neg_advantage_coef: 0.5
+task_schedule: shuffled_n2
+n2_oversample: 1.0
+oracle_mix: true
+schedule_seed: 42
 lora_r: 16
 lora_alpha: 32

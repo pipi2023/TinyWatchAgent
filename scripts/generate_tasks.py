@@ -37,6 +37,8 @@ def main() -> None:
         "evaluation": write_jsonl(args.eval_out, splits["evaluation"]),
         "seed": args.seed,
         "disjoint": True,
+        "gold_recipe": "identifiable-v2",
+        "notes": "Easy/hard tasks expose director + year so gold is recoverable from the public query.",
     }
     Path("data/tasks/metadata.json").write_text(
         json.dumps(metadata, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"

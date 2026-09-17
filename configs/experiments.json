@@ -6,5 +6,7 @@
   "reward": "tinywatch-reward-v1",
   "eval_holdout": 100,
   "sft_target_accepted": 400,
-  "grpo_steps": 100
+  "grpo_steps": 100,
+  "gold_recipe": "identifiable-v2",
+  "grpo_recipe": "v5-oracle-mix"
 }

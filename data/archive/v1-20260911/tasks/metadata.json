@@ -1,0 +1,19 @@
+{
+  "sft_pool": {
+    "path": "data/tasks/sft_pool.jsonl",
+    "rows": 1000,
+    "sha256": "6f4beed1f91c229951d35f620eafa4b3fc43fa8a2d03c2e23258daa68c51647d"
+  },
+  "grpo_train": {
+    "path": "data/grpo/train.jsonl",
+    "rows": 400,
+    "sha256": "aeb1ff4dce94ed0d63d474927ee708e15ac0ecb5affdcd9d8382ed5be97f2910"
+  },
+  "evaluation": {
+    "path": "data/evaluation/tasks.jsonl",
+    "rows": 100,
+    "sha256": "d867ecdb50d8037cf0757230cf12f72b67913b1d898268024980264c2a385d86"
+  },
+  "seed": 42,
+  "disjoint": true
+}

@@ -153,6 +153,15 @@ class TransformersToolClient:
             "total_tokens": prompt_len + int(completion_ids.shape[-1]),
         }
         tool_calls = parse_generated_tool_calls(text)
+        if not tool_calls and self.temperature > 0:
+            generate_kwargs["temperature"] = min(1.3, self.temperature + 0.2)
+            with torch.inference_mode():
+                output = self.model.generate(**encoded, **generate_kwargs)
+            completion_ids = output[0, prompt_len:]
+            text = self.tokenizer.decode(completion_ids, skip_special_tokens=False)
+            self.last_usage["completion_tokens"] = int(completion_ids.shape[-1])
+            self.last_usage["total_tokens"] = prompt_len + int(completion_ids.shape[-1])
+            tool_calls = parse_generated_tool_calls(text)
         content = TOOL_CALL_RE.sub("", text)
         content = FUNCTION_CALL_RE.sub("", content).strip()
         for token in (

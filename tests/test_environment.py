@@ -44,3 +44,13 @@ def test_search_and_open_roundtrip():
     assert result.get("guard_rejected") is not True
     assert "影片检索结果" in result["observation"]
     assert gold_id in result["observation"]
+
+
+def test_english_genre_filter_maps_to_catalog_chinese():
+    catalog, task = _task()
+    env = TinyWatchEnv(catalog, task)
+    env.reset()
+    result = env.step("search_movies", {"query": "war", "genre": "War"})
+    assert result.get("guard_rejected") is not True
+    assert "影片检索结果" in result["observation"]
+    assert "(无结果)" not in result["observation"]

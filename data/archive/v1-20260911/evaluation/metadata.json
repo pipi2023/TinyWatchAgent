@@ -1,0 +1,8 @@
+{
+  "evaluation": {
+    "path": "data/evaluation/tasks.jsonl",
+    "rows": 100,
+    "sha256": "d867ecdb50d8037cf0757230cf12f72b67913b1d898268024980264c2a385d86"
+  },
+  "seed": 42
+}

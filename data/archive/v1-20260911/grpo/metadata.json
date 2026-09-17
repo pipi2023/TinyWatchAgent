@@ -1,0 +1,8 @@
+{
+  "grpo_train": {
+    "path": "data/grpo/train.jsonl",
+    "rows": 400,
+    "sha256": "aeb1ff4dce94ed0d63d474927ee708e15ac0ecb5affdcd9d8382ed5be97f2910"
+  },
+  "seed": 42
+}

@@ -42,7 +42,14 @@ def normalize_messages_for_chat_template(messages):
     return normalized
 
 
-def build_supervised_example(messages, tools, tokenizer, max_length=8192, chat_template=None):
+def build_supervised_example(
+    messages,
+    tools,
+    tokenizer,
+    max_length=8192,
+    chat_template=None,
+    overflow="drop",
+):
     template = chat_template or tokenizer
     rendered_messages = normalize_messages_for_chat_template(messages)
     if rendered_messages is None:
@@ -61,8 +68,6 @@ def build_supervised_example(messages, tools, tokenizer, max_length=8192, chat_t
         )
         input_ids = _token_ids(tokenizer, full_text)
     except Exception:
-        return None
-    if len(input_ids) > int(max_length):
         return None
     labels = [IGNORE_INDEX] * len(input_ids)
     for index in assistant_indices:
@@ -90,6 +95,11 @@ def build_supervised_example(messages, tools, tokenizer, max_length=8192, chat_t
         if input_ids[:end] != through_assistant_ids:
             return None
         labels[start:end] = input_ids[start:end]
+    if len(input_ids) > int(max_length):
+        if overflow != "truncate":
+            return None
+        input_ids = input_ids[-int(max_length) :]
+        labels = labels[-int(max_length) :]
     if not any(label != IGNORE_INDEX for label in labels):
         return None
     return {

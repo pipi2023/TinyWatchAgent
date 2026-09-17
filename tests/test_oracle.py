@@ -16,3 +16,17 @@ def test_oracle_ten_solvable_tasks():
         assert detail.get("reward_type") == "gold_watchlist", (task["task_id"], detail)
         assert detail.get("reward_valid") is True
         assert detail.get("reward") == 1.0
+
+
+def test_oracle_rollout_matches_grpo_schema():
+    from tinywatch_grpo.generation.oracle import oracle_rollout
+
+    catalog = mini_catalog()
+    splits = generate_splits(catalog, seed=42, sft_pool=30, grpo_train=10, eval_holdout=10)
+    task = next(item for item in splits["sft_pool"] if item.get("solvable") and item["constraints"]["n_movies"] >= 2)
+    trajectory = oracle_rollout(task, catalog, max_steps=14)
+    assert trajectory["oracle"] is True
+    assert trajectory["error"] is None
+    assert trajectory["messages"][0]["role"] == "system"
+    detail = (trajectory.get("terminal_result") or {}).get("reward_detail") or {}
+    assert detail.get("reward_type") == "gold_watchlist"
